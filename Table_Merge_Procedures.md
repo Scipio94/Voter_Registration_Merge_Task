@@ -6,7 +6,7 @@ Relational database comprised of voter address data and poll precinct locations.
 
 ## Objective
 
-1. Merge tables into a single table matching addresses to polling places, and provide explanation of the process.
+Merge tables into a single table matching addresses to polling places, and provide explanation of the process.
 
 ## Variables
 
@@ -132,5 +132,79 @@ LIMIT 1
 |1007 Merchant Street|Ambridge|PA|PA 15003|USA|PEN-018|PEN-018|PA018|
 
 5. **JOIN the *Address* and *Precinct_Polling_List* tables** using the primary key ***Primary*** 
- 
+
+   - The updated schema for each table is pictured below. Notice that the ***Primary*** column in each table has a one to one relationship, and will be the column used to JOIN each table.
+
+![Untitled](https://user-images.githubusercontent.com/112409778/217402047-6a1644b2-4d6f-46a3-b586-6b69abf2e947.png)
+
+
+- Wrap the individual tables in a Common Table Expression (CTE)
+
+~~~ SQL
+WITH Address AS --Creating CTE
+
+(/*Creating Schema for Address Table*/
+SELECT
+  string_field_0 AS Street,
+  string_field_1 AS Apt,
+  string_field_2 AS City, 
+  string_field_3 AS State, 
+  string_field_4 AS Zip,
+  string_field_5 AS Precinct_ID, 
+  CONCAT(string_field_3,SUBSTR(string_field_5,5,3)) AS Primary
+FROM `my-data-project-36654.Democracy_Works_Perfromance_Task.Address`),
+
+Precinct_Polling_List AS --Second table
+(/*Creating Schema for Poll Table*/
+SELECT 
+  string_field_0 AS Street, 
+  string_field_1 AS City, 
+  SUBSTR(string_field_2,1,2) AS State,
+  string_field_2 AS State_Zip, 
+  string_field_3 AS Country, 
+  REPLACE(string_field_4,'NEW','NW') AS Precinct,--Cleaning the Precinct codes for NJ and NY
+   CONCAT(SUBSTR(string_field_2,1,2),SUBSTR(REPLACE(string_field_4,'NEW','NW'),5,3)) AS Primary 
+FROM `my-data-project-36654.Democracy_Works_Perfromance_Task.Poll1`)
+
+~~~
+
+- LEFT JOIN the two tables in the CTE using the ***Primary*** column. LEFT JOIN is preferred as any *null* values are indicative that there is no polling location in precinct associated with the address.
+
+~~~ SQL
+WITH Address AS --Creating CTE
+
+(/*Creating Schema for Address Table*/
+SELECT
+  string_field_0 AS Street,
+  string_field_1 AS Apt,
+  string_field_2 AS City, 
+  string_field_3 AS State, 
+  string_field_4 AS Zip,
+  string_field_5 AS Precinct_ID, 
+  CONCAT(string_field_3,SUBSTR(string_field_5,5,3)) AS Primary
+FROM `my-data-project-36654.Democracy_Works_Perfromance_Task.Address`),
+
+Precinct_Polling_List AS --Second table
+(/*Creating Schema for Poll Table*/
+SELECT 
+  string_field_0 AS Street, 
+  string_field_1 AS City, 
+  SUBSTR(string_field_2,1,2) AS State,
+  string_field_2 AS State_Zip, 
+  string_field_3 AS Country, 
+  REPLACE(string_field_4,'NEW','NW') AS Precinct,--Cleaning the Precinct codes for NJ and NY
+   CONCAT(SUBSTR(string_field_2,1,2),SUBSTR(REPLACE(string_field_4,'NEW','NW'),5,3)) AS Primary 
+FROM `my-data-project-36654.Democracy_Works_Perfromance_Task.Poll1`)
+
+SELECT 
+  Address.Street, Address.City, Address.State, 
+  Address.Precinct_ID, Precinct_Polling_List.Street AS Polling_Address, 
+  Precinct_Polling_List.City AS Polling_City, Precinct_Polling_List.State AS Poll_State,
+  Precinct_Polling_List.Precinct AS Polling_Precinct
+FROM Address
+LEFT JOIN Precinct_Polling_List
+USING(Primary)
+~~~
+
+To review the results of the ***LEFT JOIN*** query click [HERE](https://docs.google.com/spreadsheets/d/1bosCrqtxfyz_oHjFv_ihfZt23CgBB0Gg2kbjPVt4P_A/edit#gid=245500414)
  
