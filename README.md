@@ -1,4 +1,4 @@
-# Voter_Registration_Merge_Task
+# Voter Registration Merge Task
 
 This is a two part performance task:
 
