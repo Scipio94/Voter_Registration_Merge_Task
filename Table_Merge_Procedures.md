@@ -14,7 +14,7 @@ Merge tables into a single table matching addresses to polling places, and provi
 
 - There is curently no primary key connecting the two datasets.
 
-## Step-By-Step 
+## Table Merge Step-By-Step 
 
 1. **Data Collection**
 2. **Data Cleaning**:
