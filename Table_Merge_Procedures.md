@@ -12,7 +12,7 @@ Merge tables into a single table matching addresses to polling places, and provi
 
 ![Voter_ERD](https://user-images.githubusercontent.com/112409778/217132603-db27d518-5872-476d-bf60-9b7243a7ccf2.png)
 
-- There is curently no primary key connecting the two datasets.
+- There is curently no primary key connecting the two relational databases.
 
 ## Table Merge Step-By-Step 
 
